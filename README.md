@@ -1,10 +1,10 @@
-# Nuxt 3 Minimal Starter
+# Grafana Loki Viewer
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A simple Grafana Loki viewer for easily viewing and querying your Loki logs.
 
-## Setup
+## Installation
 
-Make sure to install the dependencies:
+To install the project dependencies, run one of the following commands depending on your preferred package manager:
 
 ```bash
 # npm
@@ -20,9 +20,11 @@ yarn install
 bun install
 ```
 
-## Development Server
+## Development
 
-Start the development server on `http://localhost:3000`:
+This version of the Grafana Loki viewer is designed for use in a development environment.
+
+To start the development server, run the following command, and visit `http://localhost:3000` in your browser:
 
 ```bash
 # npm
@@ -37,39 +39,3 @@ yarn dev
 # bun
 bun run dev
 ```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
