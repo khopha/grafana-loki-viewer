@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      clientVersion: '0.0.1'
+      clientVersion: '0.0.2'
     }
   },
   app: {
