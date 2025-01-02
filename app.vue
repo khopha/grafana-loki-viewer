@@ -6,6 +6,8 @@ const url = ref('')
 const filterQuery = ref('')
 const filterStart = ref('')
 const filterEnd = ref('')
+const recents = ref([])
+const recentSelected = ref('')
 
 if (route.query.url) {
   url.value = route.query.url
@@ -78,7 +80,10 @@ function runQuery() {
   if (query.end.length < 1) return
 
   isPending.value = true
-  window.location.href = '?' + new URLSearchParams(query).toString()
+  
+  const searchParams = new URLSearchParams(query).toString()
+  pushRecents(query, searchParams)
+  window.location.href = '?' + searchParams
 }
 
 function nanoToDate(nano) {
@@ -116,6 +121,39 @@ function usePreset() {
   window.location.href = '?' + new URLSearchParams(query).toString()
 }
 
+function pushRecents(query, searchParams) {
+  if (!localStorage['grafana-loki-viewer-recents']) {
+    localStorage['grafana-loki-viewer-recents'] = JSON.stringify([])
+  }
+  const tmpRecents = JSON.parse(localStorage['grafana-loki-viewer-recents'])
+  tmpRecents.push({
+    query,
+    searchParams,
+    createdAt: Date.now(),
+  })
+  if (tmpRecents.length > 10) {
+    tmpRecents.shift()
+  }
+  localStorage['grafana-loki-viewer-recents'] = JSON.stringify(tmpRecents)
+}
+
+watch(
+  recentSelected,
+  (newValue) => {
+    window.location.href = '?' + newValue
+  },
+)
+
+function recentFormat(recent) {
+  const dateStr = new Date(recent.createdAt).toLocaleString()
+  const filterStr = `${recent.query.url} ${recent.query.query} ${nanoToDate(recent.query.start)} ${nanoToDate(recent.query.end)}`
+  return `${dateStr} - ${filterStr}`
+}
+
+function initRecents() {
+  recents.value = JSON.parse(localStorage['grafana-loki-viewer-recents'])
+}
+
 const isDarkMode = ref(false)
 function initTheme() {
   if (localStorage['grafana-loki-viewer-theme'] === 'dark' || (!('grafana-loki-viewer-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -136,6 +174,7 @@ function toggleTheme() {
 
 onBeforeMount(() => {
   initTheme()
+  initRecents()
 })
 
 </script>
@@ -172,6 +211,15 @@ onBeforeMount(() => {
         <div>
           <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">End</label>
           <input type="datetime-local" v-model="filterEnd" class="bg-gray-50 border border-gray-300  text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        </div>
+      </div>
+      <div>
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Recents</label>
+          <select v-model="recentSelected" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option disabled value="">Select</option>
+            <option v-for="(item, index) in recents.reverse()" :value="item.searchParams">{{ recentFormat(item) }}</option>
+          </select>
         </div>
       </div>
       <div class="grid grid-cols-6 gap-4">
