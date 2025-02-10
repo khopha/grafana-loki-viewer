@@ -194,7 +194,7 @@ onBeforeMount(() => {
     </div>
 
     <!-- filters -->
-    <div class="grid gap-6 mb-6 overflow-x-auto rounded border border-gray-300 shadow-lg p-6 dark:bg-gray-900 dark:border-gray-600">
+    <div class="grid gap-6 mb-6 overflow-x-auto rounded-sm border border-gray-300 shadow-lg p-6 dark:bg-gray-900 dark:border-gray-600">
       <div>
         <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white ">Url</label>
         <input type="text" v-model="url" class="bg-gray-50 border border-gray-300  text-sm rounded-lg  block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
@@ -223,13 +223,13 @@ onBeforeMount(() => {
         </div>
       </div>
       <div class="grid grid-cols-6 gap-4">
-        <button type="submit" @click="savePreset" class="truncate col-start-1 col-span-1 py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50" :disabled="isPending">
+        <button type="submit" @click="savePreset" class="truncate col-start-1 col-span-1 py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-hidden bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50" :disabled="isPending">
           Save Preset
         </button>
-        <button type="submit" @click="usePreset" class="truncate col-start-2 col-span-1 py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50" :disabled="isPending">
+        <button type="submit" @click="usePreset" class="truncate col-start-2 col-span-1 py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-hidden bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50" :disabled="isPending">
           Use Preset
         </button>
-        <button type="submit" @click="runQuery" class="col-start-3 col-span-7 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:cursor-not-allowed disabled:opacity-50" :disabled="isPending">
+        <button type="submit" @click="runQuery" class="col-start-3 col-span-7 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-hidden focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:cursor-not-allowed disabled:opacity-50" :disabled="isPending">
           <div class="flex w-full justify-center items-center">
             <Icon v-if="isPending" name="mdi:loading" class="animate-spin mr-3" />
             <div>Run Query</div>
@@ -239,7 +239,7 @@ onBeforeMount(() => {
     </div>
 
     <!-- logs -->
-    <div v-if="logs.length > 0" class="overflow-x-auto rounded border border-gray-300 dark:border-gray-600 shadow-lg">
+    <div v-if="logs.length > 0" class="overflow-x-auto rounded-sm border border-gray-300 dark:border-gray-600 shadow-lg">
       <table class="w-full text-sm dark:text-white">
         <thead class="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr class="text-left">
@@ -249,7 +249,7 @@ onBeforeMount(() => {
           </tr>
         </thead>
         <tbody class="font-mono">
-          <tr v-for="(item, index) in logs" class="border-b hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
+          <tr v-for="(item, index) in logs" class="border-b border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
             <td class="pl-6 py-2">{{ index + 1 }}</td>
             <td class="pl-6 py-2">{{ item[0] }}</td>
             <td class="pl-6 py-2">{{ item[1] }}</td>
