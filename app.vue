@@ -91,6 +91,10 @@ function nanoToDate(nano) {
   return (new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString()).slice(0, -1)
 }
 
+function dateFormat(date) {
+  return nanoToDate(date).replace('T', ' ').substring(0, 19)
+}
+
 fetchQueryRange()
 
 function savePreset() {
@@ -249,9 +253,9 @@ onBeforeMount(() => {
           </tr>
         </thead>
         <tbody class="font-mono">
-          <tr v-for="(item, index) in logs" class="border-b border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
+          <tr v-for="(item, index) in logs" class="whitespace-nowrap border-b border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
             <td class="pl-6 py-2">{{ index + 1 }}</td>
-            <td class="pl-6 py-2">{{ item[0] }}</td>
+            <td class="pl-6 py-2">{{ dateFormat(item[0]) }}</td>
             <td class="pl-6 py-2">{{ item[1] }}</td>
           </tr>
         </tbody>
