@@ -1,10 +1,11 @@
+import packageJson from './package.json'
 import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      clientVersion: '0.2.0'
+      clientVersion: packageJson.version
     }
   },
   app: {
