@@ -155,7 +155,13 @@ function recentFormat(recent) {
 }
 
 function initRecents() {
-  recents.value = JSON.parse(localStorage['grafana-loki-viewer-recents'])
+  let jsonRecents = null
+  try {
+    jsonRecents = JSON.parse(localStorage['grafana-loki-viewer-recents'])
+  } catch {}
+  if (jsonRecents) {
+    recents.value = jsonRecents
+  }
 }
 
 const isDarkMode = ref(false)
