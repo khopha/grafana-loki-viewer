@@ -194,8 +194,8 @@ onBeforeMount(() => {
   <div class="p-6 text-gray-900">
 
     <div class="flex items-center mb-6 justify-between">
-      <div class="text-xl capitalize font-semibold text-gray-900 dark:text-white">
-        Grafana loki viewer
+      <div class="flex items-baseline justify-center text-xl capitalize font-semibold text-gray-900 gap-2 dark:text-white">
+        <a href="/">Grafana loki viewer</a>
         <span class="text-xs">{{ $config.public.clientVersion }}</span>
       </div>
       <button class="dark:text-white" @click="toggleTheme">
