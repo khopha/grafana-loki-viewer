@@ -34,6 +34,20 @@ const errorMessage = ref('')
 const hasExecutedQuery = ref(false)
 const isFiltersCollapsed = ref(false)
 
+const dateRanges = [
+  { value: 'custom', label: 'Custom' },
+  { value: 'today', label: 'Today' },
+  { value: 'yesterday', label: 'Yesterday' },
+  { value: 'this_week', label: 'This week (Sun - Today)' },
+  { value: 'last_7_days', label: 'Last 7 days' },
+  { value: 'this_month', label: 'This month (First day - Today)' },
+  { value: 'last_30_days', label: 'Last 30 days' },
+  { value: 'last_90_days', label: 'Last 90 days' },
+  { value: 'last_12_months', label: 'Last 12 months' },
+  { value: 'this_year', label: 'This year (Jan - Today)' }
+]
+const selectedDateRange = ref('custom')
+
 async function fetchQueryRange() {
   errorMessage.value = ''
   hasExecutedQuery.value = true
@@ -176,6 +190,13 @@ watch(
   },
 )
 
+watch(
+  selectedDateRange,
+  (newValue) => {
+    setDateRange(newValue)
+  },
+)
+
 function recentFormat(recent) {
   const dateStr = new Date(recent.createdAt).toLocaleString()
   const filterStr = `${recent.query.url} ${recent.query.query} ${nanoToDate(recent.query.start)} ${nanoToDate(recent.query.end)}`
@@ -225,6 +246,60 @@ function toggleTheme() {
 
 function toggleFilters() {
   isFiltersCollapsed.value = !isFiltersCollapsed.value
+}
+
+function setDateRange(rangeValue) {
+  const now = new Date()
+  let startDate, endDate = now
+
+  switch (rangeValue) {
+    case 'today':
+      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      break
+    case 'yesterday':
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      startDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate())
+      endDate = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59)
+      break
+    case 'this_week':
+      const thisWeekStart = new Date(now)
+      thisWeekStart.setDate(thisWeekStart.getDate() - thisWeekStart.getDay())
+      startDate = new Date(thisWeekStart.getFullYear(), thisWeekStart.getMonth(), thisWeekStart.getDate())
+      break
+    case 'last_7_days':
+      startDate = new Date(now)
+      startDate.setDate(startDate.getDate() - 7)
+      break
+    case 'this_month':
+      startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+      break
+    case 'last_30_days':
+      startDate = new Date(now)
+      startDate.setDate(startDate.getDate() - 30)
+      break
+    case 'last_90_days':
+      startDate = new Date(now)
+      startDate.setDate(startDate.getDate() - 90)
+      break
+    case 'last_12_months':
+      startDate = new Date(now)
+      startDate.setFullYear(startDate.getFullYear() - 1)
+      break
+    case 'this_year':
+      startDate = new Date(now.getFullYear(), 0, 1)
+      break
+    case 'custom':
+    default:
+      return
+  }
+
+  if (startDate) {
+    filterStart.value = (new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000).toISOString()).slice(0, -1)
+  }
+  if (endDate) {
+    filterEnd.value = (new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000).toISOString()).slice(0, -1)
+  }
 }
 
 onBeforeMount(() => {
@@ -295,7 +370,7 @@ onUnmounted(() => {
             type="text" 
             v-model="url" 
             placeholder="https://your-loki-server.com"
-            class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+            class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 placeholder-gray-400 dark:placeholder-gray-500 text-gray-900 dark:text-white"
             required 
           />
         </div>
@@ -306,8 +381,23 @@ onUnmounted(() => {
             rows="2" 
             v-model="filterQuery" 
             placeholder='{app="my-app"} |= "error"'
-            class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white resize-none" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+            class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white resize-none"
           ></textarea>
+        </div>
+
+        <div class="relative">
+          <label class="block mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">Date Range</label>
+          <div class="relative">
+            <select 
+              v-model="selectedDateRange" 
+              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white appearance-none cursor-pointer"
+            >
+              <option v-for="range in dateRanges" :key="range.value" :value="range.value">{{ range.label }}</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <Icon name="heroicons:chevron-down" class="h-5 w-5 text-gray-400" />
+            </div>
+          </div>
         </div>
 
         <div class="grid gap-4 md:grid-cols-2">
@@ -316,7 +406,8 @@ onUnmounted(() => {
             <input 
               type="datetime-local" 
               v-model="filterStart" 
-              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+              @input="selectedDateRange = 'custom'"
+              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white"
             />
           </div>
           <div class="relative">
@@ -324,7 +415,8 @@ onUnmounted(() => {
             <input 
               type="datetime-local" 
               v-model="filterEnd" 
-              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+              @input="selectedDateRange = 'custom'"
+              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white"
             />
           </div>
         </div>
@@ -335,7 +427,7 @@ onUnmounted(() => {
             <select 
               v-if="isClientMounted" 
               v-model="recentSelected" 
-              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white appearance-none cursor-pointer" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+              class="w-full px-4 py-3 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:border-gray-300 dark:focus:border-gray-600 text-gray-900 dark:text-white appearance-none cursor-pointer"
             >
               <option disabled value="">Select a recent query...</option>
               <option v-for="(item, index) in recentsReversed" :key="index" :value="item.searchParams">{{ recentFormat(item) }}</option>
@@ -357,7 +449,7 @@ onUnmounted(() => {
           <button 
             @click="savePreset" 
             :disabled="isPending"
-            class="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+            class="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Icon name="heroicons:bookmark" class="w-4 h-4 mr-2" />
             Save Preset
@@ -365,7 +457,7 @@ onUnmounted(() => {
           <button 
             @click="usePreset" 
             :disabled="isPending"
-            class="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed" style="--tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+            class="cursor-pointer inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Icon name="heroicons:arrow-up-tray" class="w-4 h-4 mr-2" />
             Load Preset
@@ -376,7 +468,7 @@ onUnmounted(() => {
         <button 
           @click="runQuery" 
           :disabled="isPending"
-          class="cursor-pointer inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-gray-900 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] min-w-[160px] sm:min-w-[180px]" style="background-color: #FAC35A; --tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+          class="cursor-pointer inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-gray-900 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] min-w-[160px] sm:min-w-[180px]"
         >
           <Icon 
             v-if="isPending" 
@@ -431,7 +523,7 @@ onUnmounted(() => {
       v-if="isClientMounted && showScrollToTop"
       @click="scrollToTop"
       class="cursor-pointer fixed bottom-6 right-6 w-12 h-12 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 transform hover:scale-105 z-50"
-      style="background-color: #FAC35A; --tw-ring-color: #FAC35A; --tw-ring-opacity: 0.5;"
+     
     >
       <Icon name="heroicons:arrow-up" class="w-6 h-6 text-gray-900 mx-auto" />
     </button>
