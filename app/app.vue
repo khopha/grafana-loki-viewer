@@ -468,7 +468,7 @@ onUnmounted(() => {
         <button 
           @click="runQuery" 
           :disabled="isPending"
-          class="cursor-pointer inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-gray-900 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] min-w-[160px] sm:min-w-[180px]"
+          class="cursor-pointer inline-flex items-center justify-center px-8 py-3 text-base font-semibold text-gray-900 bg-yellow-400 hover:bg-yellow-500 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] min-w-[160px] sm:min-w-[180px]"
         >
           <Icon 
             v-if="isPending" 
@@ -522,8 +522,7 @@ onUnmounted(() => {
     <button 
       v-if="isClientMounted && showScrollToTop"
       @click="scrollToTop"
-      class="cursor-pointer fixed bottom-6 right-6 w-12 h-12 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 transform hover:scale-105 z-50"
-     
+      class="cursor-pointer fixed bottom-6 right-6 w-12 h-12 bg-yellow-400 hover:bg-yellow-500 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-all duration-200 transform hover:scale-105 z-50"
     >
       <Icon name="heroicons:arrow-up" class="w-6 h-6 text-gray-900 mx-auto" />
     </button>
